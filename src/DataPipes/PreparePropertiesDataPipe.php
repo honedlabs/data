@@ -10,9 +10,14 @@ use Spatie\LaravelData\DataPipes\DataPipe;
 use Spatie\LaravelData\Support\Creation\CreationContext;
 use Spatie\LaravelData\Support\Creation\ValidationStrategy;
 use Spatie\LaravelData\Support\DataClass;
+use Spatie\LaravelData\Support\DataConfig;
 
 class PreparePropertiesDataPipe implements DataPipe
 {
+    public function __construct(
+        protected DataConfig $config
+    ) {}
+
     /**
      * Handle the data pipe.
      *
@@ -33,18 +38,36 @@ class PreparePropertiesDataPipe implements DataPipe
             return $properties;
         }
 
-        foreach ($class->properties as $dataProperty) {
-            $attribute = $dataProperty->attributes->first(PreparesPropertyValue::class);
+        foreach ($properties as $name => $value) {
+            $dataProperty = $class->properties[$name] ?? null;
 
-            if ($attribute === null) {
+            if ($dataProperty === null) {
                 continue;
             }
 
-            $name = $dataProperty->inputMappedName ?: $dataProperty->name;
+            $attribute = $dataProperty->attributes->first(PreparesPropertyValue::class);
 
-            $value = $attribute->overwrite($dataProperty, $payload, $properties, $creationContext);
+            if ($attribute !== null) {
+                $value = $attribute->overwrite($dataProperty, $payload, $properties, $creationContext);
 
-            $properties[$name] = $value;
+                $properties[$name] = $value;
+
+                continue;
+            }
+
+            if (
+                (
+                    $dataProperty->type->kind->isDataObject()
+                    || $dataProperty->type->kind->isDataCollectable()
+                ) && $dataProperty->type->dataClass !== null
+            ) {
+                $dataClass = $this->config->getDataClass($dataProperty->type->dataClass);
+
+                // @phpstan-ignore-next-line
+                $value = $this->handle($payload, $dataClass, (array) $value, $creationContext);
+
+                $properties[$name] = $value;
+            }
         }
 
         return $properties;
