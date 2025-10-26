@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Honed\Data\Rules;
 
-use Honed\Data\Contracts\QueryRule;
+use Honed\Data\Contracts\QueryFrom;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Intervention\Validation\AbstractRule;
@@ -16,15 +16,15 @@ use Intervention\Validation\AbstractRule;
 class RecordsExist extends AbstractRule
 {
     /**
-     * @param  class-string<TModel|QueryRule<TModel, TBuilder>>|TBuilder|TModel|QueryRule<TModel, TBuilder>  $query
+     * @param  class-string<TModel|QueryFrom<TModel, TBuilder>>|TBuilder|TModel|QueryFrom<TModel, TBuilder>  $query
      */
     public function __construct(
-        protected string|Builder|Model|QueryRule $query,
+        protected string|Builder|Model|QueryFrom $query,
         protected ?string $column = null,
     ) {}
 
     /**
-     * Checks if the given value is valid in the scope of the current rule.
+     * Check if the given value is valid in the scope of the current rule.
      */
     public function isValid(mixed $value): bool
     {
@@ -44,7 +44,7 @@ class RecordsExist extends AbstractRule
 
         /** @var TBuilder */
         return match (true) {
-            $this->query instanceof QueryRule => $this->query->query(),
+            $this->query instanceof QueryFrom => $this->query->query(),
             $this->query instanceof Model => $this->query->newQuery(),
             default => $this->query,
         };
@@ -56,7 +56,7 @@ class RecordsExist extends AbstractRule
     protected function countRecords(mixed $value): int
     {
         return tap($this->resolveQuery(), fn (Builder $query) => match (true) {
-            ! $this->column => $query->whereKey($value),
+            $this->column === null => $query->whereKey($value),
             ! is_array($value) => $query->where($query->qualifyColumn($this->column), $value),
             in_array($query->getModel()->getKeyType(), ['int', 'integer']) => $query->whereIntegerInRaw($query->qualifyColumn($this->column), $value),
             default => $query->whereIn($query->qualifyColumn($this->column), $value),

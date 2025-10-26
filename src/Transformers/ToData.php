@@ -6,12 +6,11 @@ namespace Honed\Data\Transformers;
 
 use Spatie\LaravelData\Support\DataProperty;
 use Spatie\LaravelData\Support\Transformation\TransformationContext;
-use Spatie\LaravelData\Transformers\Transformer;
 
 /**
- * @template TData of \Spatie\LaravelData\Contracts\BaseData
+ * @template TData of \Spatie\LaravelData\Data
  */
-class ToData implements Transformer
+class ToData extends FormTransformer
 {
     /**
      * @param  class-string<TData>  $data
@@ -21,9 +20,9 @@ class ToData implements Transformer
     ) {}
 
     /**
-     * Transform the value to a data object.
+     * Transform the value to field data.
      */
-    public function transform(
+    public function toFormData(
         DataProperty $property,
         mixed $value,
         TransformationContext $context

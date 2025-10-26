@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Honed\Data\Concerns;
 
 use BackedEnum;
-use Exception;
+use Honed\Data\Exceptions\PartitionKeyNotSetException;
 
 /**
  * @phpstan-require-implements \Spatie\LaravelData\Contracts\IncludeableData
@@ -25,16 +25,14 @@ trait PartitionsData
      *
      * @return $this
      *
-     * @throws Exception
+     * @throws PartitionKeyNotSetException
      */
     public function partition(string|BackedEnum $key, bool $exclude = false): static
     {
         $keys = $this->getPartition(is_string($key) ? $key : $key->value);
 
         if ($keys === null) {
-            throw new Exception(
-                sprintf('Partition key [%s] does exist for data class [%s].', $key, static::class)
-            );
+            PartitionKeyNotSetException::throw($key, $this);
         }
 
         if ($exclude) {
@@ -47,7 +45,7 @@ trait PartitionsData
     /**
      * Get the partition for the given key.
      *
-     * @return list<string>|null
+     * @return ?list<string>
      */
     protected function getPartition(string $key): ?array
     {
