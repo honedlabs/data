@@ -10,10 +10,10 @@ use Spatie\LaravelData\Support\Creation\CreationContext;
 use Spatie\LaravelData\Support\DataProperty;
 
 #[Attribute(Attribute::TARGET_PROPERTY)]
-class ArrayParameter implements PreparesPropertyValue
+class Delimit implements PreparesPropertyValue
 {
     public function __construct(
-        public string $key
+        protected string $delimiter = ','
     ) {}
 
     /**
@@ -36,8 +36,9 @@ class ArrayParameter implements PreparesPropertyValue
             return $value;
         }
 
-        return $dataProperty->type->acceptsType('array')
-            ? array_column($value, $this->key)
-            : ($value[$this->key] ?? null);
+        return implode($this->delimiter, array_map(
+            fn (mixed $value) => is_scalar($value) ? (string) $value : '',
+            $value
+        ));
     }
 }

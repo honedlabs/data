@@ -2,15 +2,22 @@
 
 declare(strict_types=1);
 
-use App\Data\Validation\RecaptchaData;
+use Honed\Data\Attributes\Validation\Recaptcha;
 use Illuminate\Support\Facades\Validator;
+use Spatie\LaravelData\Data;
 
-beforeEach(function () {});
+beforeEach(function () {
+    $this->data = new class() extends Data
+    {
+        #[Recaptcha]
+        public mixed $value;
+    };
+});
 
 it('validates', function (mixed $input, bool $expected) {
     expect(Validator::make([
         'value' => $input,
-    ], RecaptchaData::getValidationRules([
+    ], $this->data::getValidationRules([
         'value' => $input,
     ])))->passes()->toBe($expected);
 })->with([
