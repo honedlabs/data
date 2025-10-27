@@ -20,7 +20,7 @@ class Phone extends CustomValidationAttribute
 
     /**
      * Create a new rule instance.
-     *
+     * 
      * @param  string|list<string>  $countries
      */
     public function __construct(string|array $countries = [])
@@ -30,7 +30,6 @@ class Phone extends CustomValidationAttribute
 
         $this->countries = $countries;
     }
-
     /**
      * Get the validation rules for the attribute.
      *
@@ -39,7 +38,7 @@ class Phone extends CustomValidationAttribute
     public function getRules(ValidationPath $path): array|object|string
     {
         $countries = implode(',', $this->countries);
-
+        
         return "phone:{$countries}";
     }
 }

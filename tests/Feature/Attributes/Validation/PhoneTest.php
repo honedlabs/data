@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use Honed\Data\Attributes\Validation\Phone;
+use Honed\Data\Attributes\Validation\Recaptcha;
 use Illuminate\Support\Facades\Validator;
 use Spatie\LaravelData\Data;
 
