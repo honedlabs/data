@@ -92,12 +92,12 @@ class DataServiceProvider extends ServiceProvider
         ], 'honed-data-config');
 
         $this->publishes([
-            __DIR__.'/../resources/lang' => lang_path('vendor/data'),
+            __DIR__.'/../resources/lang' => lang_path('vendor/honed-data'),
         ], 'honed-data-lang');
 
         foreach ($this->getLanguages() as $language) {
             $this->publishes([
-                __DIR__.'/../resources/lang/'.$language => lang_path('vendor/data/'.$language),
+                __DIR__.'/../resources/lang/'.$language => lang_path('vendor/honed-data/'.$language),
             ], 'honed-data-lang-'.$language);
         }
     }
