@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 use Honed\Data\DataServiceProvider;
 use Illuminate\Support\Facades\File;
 
