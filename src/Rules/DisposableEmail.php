@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Honed\Data\Rules;
 
-use Intervention\Validation\AbstractRule;
+use Honed\Data\Support\AbstractRule;
 
-class SpamEmail extends AbstractRule
+class DisposableEmail extends AbstractRule
 {
     /**
      * @param  array<int, string>  $spamEmails
@@ -3797,6 +3797,6 @@ class SpamEmail extends AbstractRule
      */
     protected function shortname(): string
     {
-        return 'spam_email';
+        return 'disposable_email';
     }
 }

@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-use Honed\Data\Rules\SpamEmail;
+use Honed\Data\Rules\DisposableEmail;
 use Illuminate\Support\Facades\Validator;
 
 beforeEach(function () {
-    $this->rule = new SpamEmail();
+    $this->rule = new DisposableEmail();
 });
 
 it('validates', function (mixed $input, bool $expected) {
@@ -58,6 +58,6 @@ it('fails validator', function () {
         ->errors()
         ->scoped(fn ($bag) => $bag
             ->first('value')
-            ->toBe('validation::validation.spam_email')
+            ->toBe(__('honed-data::validation.disposable_email', ['attribute' => 'value']))
         );
 });

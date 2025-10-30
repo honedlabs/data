@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-use Honed\Data\Attributes\Validation\Phone;
+use Honed\Data\Attributes\Validation\Even;
 use Honed\Data\Attributes\Validation\Recaptcha;
 use Illuminate\Support\Facades\Validator;
 use Spatie\LaravelData\Data;
@@ -10,7 +10,7 @@ use Spatie\LaravelData\Data;
 beforeEach(function () {
     $this->data = new class() extends Data
     {
-        #[Phone('AU')]
+        #[Even]
         public mixed $value;
     };
 });
@@ -22,8 +22,16 @@ it('validates', function (mixed $input, bool $expected) {
         'value' => $input,
     ])))->passes()->toBe($expected);
 })->with([
-    ['0412345678', true],
-    ['04123456789', false],
-    ['+61412345678', true],
-    ['+614123456789', false],
+    [2, true],
+    [2.65, true],
+    [0, true],
+    [-2, true],
+    [-2.65, true],
+    [1, false],
+    [1.65, false],
+    [-1, false],
+    [-1.65, false],
+    [0.65, true],
+    [-0.65, true],
+    ['a', true],
 ]);

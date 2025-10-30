@@ -20,17 +20,21 @@ class Phone extends CustomValidationAttribute
 
     /**
      * Create a new rule instance.
-     *
+     * 
      * @param  string|list<string>  $countries
      */
     public function __construct(string|array $countries = [])
     {
-        /** @var list<string> */
+        /** @var list<string> $countries */
         $countries = is_array($countries) ? $countries : func_get_args();
+
+        if ($countries === []) {
+            /** @var list<string> $countries */
+            $countries = config()->array('honed-data.phone_country_codes', ['INTERNATIONAL']);
+        }
 
         $this->countries = $countries;
     }
-
     /**
      * Get the validation rules for the attribute.
      *
@@ -39,7 +43,7 @@ class Phone extends CustomValidationAttribute
     public function getRules(ValidationPath $path): array|object|string
     {
         $countries = implode(',', $this->countries);
-
+        
         return "phone:{$countries}";
     }
 }
