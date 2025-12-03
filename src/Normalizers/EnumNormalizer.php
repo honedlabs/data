@@ -5,6 +5,10 @@ declare(strict_types=1);
 namespace Honed\Data\Normalizers;
 
 use BackedEnum;
+use Honed\Core\Contracts\HasLabel;
+use Honed\Data\Contracts\Disableable;
+use Illuminate\Support\Facades\Lang;
+use Illuminate\Support\Str;
 use Spatie\LaravelData\Normalizers\Normalized\Normalized;
 use Spatie\LaravelData\Normalizers\Normalizer;
 
@@ -22,8 +26,33 @@ class EnumNormalizer implements Normalizer
         }
 
         return [
-            'label' => $value->name,
+            'label' => $this->getLabel($value),
             'value' => $value->value,
+            'disabled' => $value instanceof Disableable ? $value->isDisabled() : false,
         ];
+    }
+
+    /**
+     * Get the label for the enum.
+     */
+    protected function getLabel(BackedEnum $value): string
+    {
+        /** @var string */
+        return match (true) {
+            $value instanceof HasLabel => $value->getLabel(),
+            Lang::has($key = $this->getTranslationKey($value)) => Lang::get($key),
+            default => $value->name,
+        };
+    }
+
+    /**
+     * Guess the translation key for the enum.
+     */
+    protected function getTranslationKey(BackedEnum $value): string
+    {
+        $file = Str::snake(class_basename(get_class($value)));
+
+        return "{$file}.{$value->value}";
+
     }
 }
